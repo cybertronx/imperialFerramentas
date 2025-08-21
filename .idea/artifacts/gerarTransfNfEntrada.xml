@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="gerarTransfNfEntrada">
+    <output-path>$PROJECT_DIR$/out/artifacts/gerarTransfNfEntrada</output-path>
+    <root id="archive" name="gerarTransfNfEntrada.jar">
+      <element id="module-output" name="imperialFerramentas" />
+    </root>
+  </artifact>
+</component>
