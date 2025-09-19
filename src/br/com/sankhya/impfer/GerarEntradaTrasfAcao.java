@@ -9,6 +9,7 @@ import br.com.sankhya.jape.sql.NativeSql;
 import br.com.sankhya.jape.vo.DynamicVO;
 import br.com.sankhya.jape.wrapper.JapeFactory;
 import br.com.sankhya.jape.wrapper.JapeWrapper;
+import br.com.sankhya.modelcore.comercial.impostos.ImpostosHelpper;
 import br.com.sankhya.modelcore.util.EntityFacadeFactory;
 import com.sankhya.util.BigDecimalUtil;
 
@@ -64,6 +65,9 @@ public class GerarEntradaTrasfAcao implements AcaoRotinaJava {
                     cabDAO.prepareToUpdateByPK(vendaVO.asBigDecimal("NUNOTA"))
                             .set("NUREM", nunota)
                             .update();
+
+
+                    recalcularvalor(nunota);
                 }
 
 
@@ -74,6 +78,17 @@ public class GerarEntradaTrasfAcao implements AcaoRotinaJava {
 
         }
 
+
+    }
+
+
+    private void recalcularvalor(BigDecimal nunota) throws Exception {
+
+        ImpostosHelpper impostosHelper = new ImpostosHelpper();
+        impostosHelper.recalculaICMSCab();
+        impostosHelper.calcularImpostos(nunota);
+        impostosHelper.totalizarNota(nunota);
+        impostosHelper.setCalcularTudo(true);
 
     }
 

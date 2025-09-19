@@ -8,7 +8,12 @@ import br.com.sankhya.jape.vo.DynamicVO;
 import br.com.sankhya.jape.wrapper.JapeFactory;
 import br.com.sankhya.jape.wrapper.JapeWrapper;
 import br.com.sankhya.modelcore.auth.AuthenticationInfo;
+import br.com.sankhya.modelcore.comercial.CentralFinanceiro;
+import br.com.sankhya.modelcore.comercial.CentralItemNota;
+import br.com.sankhya.modelcore.comercial.impostos.ImpostosHelpper;
+import br.com.sankhya.modelcore.dwfdata.vo.ItemNotaVO;
 import br.com.sankhya.modelcore.util.EntityFacadeFactory;
+import br.com.sankhya.modelcore.util.MGECoreParameter;
 import com.sankhya.util.BigDecimalUtil;
 import org.cuckoo.core.ScheduledAction;
 import org.cuckoo.core.ScheduledActionContext;
@@ -19,8 +24,6 @@ import java.util.Collection;
 
 public class GerarEntTransfAgendamento implements ScheduledAction {
 
-    private static final BigDecimal TOP_TRANSF_SAIDA = BigDecimal.valueOf(1152);
-    private static final BigDecimal TOP_TRANSF_ENTRADA = BigDecimal.valueOf(1452);
 
     // Instâncias de JapeWrapper para interagir com as tabelas do Sankhya
     private JapeWrapper cabDAO = JapeFactory.dao("CabecalhoNota");
@@ -61,6 +64,8 @@ public class GerarEntTransfAgendamento implements ScheduledAction {
                     cabDAO.prepareToUpdateByPK(vendaVO.asBigDecimal("NUNOTA"))
                             .set("NUREM", nunota)
                             .update();
+
+                    recalcularvalor(nunota);
                 }
 
             }
@@ -72,6 +77,17 @@ public class GerarEntTransfAgendamento implements ScheduledAction {
             e1.printStackTrace();
 
         }
+
+    }
+
+    private void recalcularvalor(BigDecimal nunota) throws Exception {
+
+        ImpostosHelpper impostosHelper = new ImpostosHelpper();
+        impostosHelper.setForcarRecalculo(true);
+        impostosHelper.carregarNota(nunota);
+        impostosHelper.calcularImpostos(nunota);
+        impostosHelper.totalizarNota(nunota);
+        impostosHelper.salvarNota();
 
     }
 
@@ -91,7 +107,7 @@ public class GerarEntTransfAgendamento implements ScheduledAction {
                 .set("NUREM", rs1.getBigDecimal("NUNOTA"))
                 .set("DTMOV", rs1.getTimestamp("DTMOV"))
                 .set("DTFATUR", rs1.getTimestamp("DTFATUR"))
-                .set("CODTIPOPER", TOP_TRANSF_ENTRADA)
+                .set("CODTIPOPER", rs1.getBigDecimal("TOPENTRADA"))
                 .set("CODCENCUS", BigDecimal.valueOf(101007))
                 .set("CODTIPVENDA", rs1.getBigDecimal("CODTIPVENDA"))
                 .set("SERIENOTA", rs1.getString("SERIENOTA"))
@@ -130,6 +146,14 @@ public class GerarEntTransfAgendamento implements ScheduledAction {
                     .set("CODVOL", iteVO.asString("CODVOL"))
                     .save();
 
+            CentralItemNota itemNota = new CentralItemNota();
+
+            itemNota.inicializaNota(nunota);
+            itemNota.inicializaNota(nunota,iteVO.asBigDecimal("CODPROD"));
+
+
         }
     }
+
+
 }

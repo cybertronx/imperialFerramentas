@@ -12,5 +12,6 @@
     <orderEntry type="library" name="SankhyaW-extensions" level="project" />
     <orderEntry type="library" name="sanws" level="project" />
     <orderEntry type="library" name="sanutil-4.23b96" level="project" />
+    <orderEntry type="library" name="mge-param-4.23b96" level="project" />
   </component>
 </module>

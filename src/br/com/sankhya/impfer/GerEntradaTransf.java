@@ -73,7 +73,11 @@ public class GerEntradaTransf implements EventoProgramavelJava {
                     cabDAO.prepareToUpdateByPK(transfVO.asBigDecimal("NUNOTA"))
                             .set("NUREM", nunota)
                             .update();
+
+
                 }
+
+
             }
 
         }
